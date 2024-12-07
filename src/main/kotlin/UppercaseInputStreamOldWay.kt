@@ -4,19 +4,13 @@ class UppercaseInputStreamOldWay(private val innerStream: InputStream<Char?>) : 
         return char?.uppercaseChar()
     }
 
-    override fun skip(amount: Int) {
-        innerStream.skip(amount)
-    }
+    override fun skip(amount: Int) = innerStream.skip(amount)
 
-    override fun reset() {
-        innerStream.reset()
-    }
+    override fun reset() = innerStream.reset()
 
     override fun available(): Int = innerStream.available()
 
-    override fun close() {
-        innerStream.close()
-    }
+    override fun close() = innerStream.close()
 }
 
 fun main() {

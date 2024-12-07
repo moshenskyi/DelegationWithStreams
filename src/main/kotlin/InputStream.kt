@@ -9,7 +9,6 @@ interface InputStream<T> : Closeable {
 
 class CharStreamReader(private val input: String) : InputStream<Char?> {
     private var currPos = 0
-
     private var closed = false
 
     override fun read(): Char? {
@@ -25,7 +24,7 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         ensureOpen()
 
         val newPos = amount + currPos
-        if (newPos > input.length) throw IllegalArgumentException("Skipped amount exceeds input length")
+        if (newPos >= input.length) throw IllegalArgumentException("Skipped amount exceeds input length")
 
         currPos = newPos
     }
@@ -35,9 +34,7 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         currPos = 0
     }
 
-    override fun available(): Int {
-        return if (closed) 0 else input.length - currPos
-    }
+    override fun available(): Int = if (closed) 0 else input.length - currPos
 
     override fun close() {
         closed = true
