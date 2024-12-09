@@ -1,13 +1,13 @@
 import java.io.Closeable
 
-interface InputStream<T> : Closeable {
+interface InputStreamReader<T> : Closeable {
     fun read(): T
     fun skip(amount: Int)
     fun reset()
     fun available(): Int
 }
 
-class CharStreamReader(private val input: String) : InputStream<Char?> {
+class CharStreamReader(private val input: String) : InputStreamReader<Char?> {
     private var currPos = 0
     private var closed = false
 
@@ -24,7 +24,7 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         ensureOpen()
 
         val newPos = amount + currPos
-        if (newPos >= input.length) throw IllegalArgumentException("Skipped amount exceeds input length")
+        require(newPos < input.length) { "Skipped amount exceeds input length" }
 
         currPos = newPos
     }
@@ -40,7 +40,5 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         closed = true
     }
 
-    private fun ensureOpen() {
-        if (closed) throw IllegalStateException("Stream is already closed")
-    }
+    private fun ensureOpen() = check(closed.not()) { "Stream is already closed" }
 }

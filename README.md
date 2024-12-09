@@ -6,8 +6,15 @@ In Kotlin, we can take this concept further with class delegation. It allows us 
 
 One of the most iconic examples of decoration in the JVM ecosystem is I/O Streams. Streams are built by wrapping one stream with another, adding layers of functionality along the way. Inspired by this, let’s explore how Kotlin’s class delegation can simplify such patterns. We'll create a simple, illustrative example—a stream that may not serve a practical purpose but demonstrates how to make delegation more idiomatic in Kotlin.
 
+An I/O Stream represents an input source or an output destination. A stream can represent many different kinds of sources and destinations, including disk files, devices, other programs, and memory arrays.
+
+### What are IO Streams in Java
+Streams support many different kinds of data, including simple bytes, primitive data types, localized characters, and objects. Some streams simply pass on data; others manipulate and transform the data in useful ways.
+
+No matter how they work internally, all streams present the same simple model to programs that use them: A stream is a sequence of data. A program uses an input stream to read data from a source, one item at a time
+
 ## High-level design
-![screenshot](screenshots/input_stream_sample.png)
+![screenshot](screenshots/streams_sample.drawio.png)
 
 
 ## Implementation
@@ -18,7 +25,7 @@ Let’s start by defining our inner stream. This stream takes a **String** as in
 
 
 ``` kotlin
-class CharStreamReader(private val input: String) : InputStream<Char?> {  
+class CharStreamReader(private val input: String) : InputStreamReader<Char?> {  
    private var currPos = 0  
    private var closed = false  
   
@@ -35,7 +42,7 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         ensureOpen()  
   
         val newPos = amount + currPos
-        if (newPos >= input.length) throw IllegalArgumentException("Skipped amount exceeds input length")  
+        require(newPos < input.length) { "Skipped amount exceeds input length" }  
   
         currPos = newPos  
     }  
@@ -51,9 +58,7 @@ class CharStreamReader(private val input: String) : InputStream<Char?> {
         closed = true  
     }  
   
-    private fun ensureOpen() {  
-        if (closed) throw IllegalStateException("Stream is already closed")  
-    }  
+    private fun ensureOpen() = check(closed.not()) { "Stream is already closed" }
 }
 ```
 
@@ -67,7 +72,7 @@ Now, let’s move on to the outer stream. The inner stream is fairly detailed, i
 Using the traditional approach, we override the methods we want to modify and delegate the rest directly to the inner stream. While this gets the job done, it’s quite verbose.
 
 ``` kotlin
-class UppercaseInputStreamOldWay(private val innerStream: InputStream<Char?>) : InputStream<Char?> {
+class UppercaseInputStreamReaderOldWay(private val innerStream: InputStream<Char?>) : InputStreamReader<Char?> {
     override fun read(): Char? {
         val char = innerStream.read()
         return char?.uppercaseChar()
@@ -88,7 +93,7 @@ class UppercaseInputStreamOldWay(private val innerStream: InputStream<Char?>) : 
 Kotlin offers a more elegant solution: class delegation. It lets us reduce boilerplate code while achieving the same functionality. Here's how it looks in practice.
 
 ``` kotlin
-class UppercaseInputStream(private val innerStream: InputStream<Char?>) : InputStream<Char?> by innerStream {
+class UppercaseInputStreamReader(private val innerStream: InputStream<Char?>) : InputStreamReader<Char?> by innerStream {
     override fun read(): Char? {
         val char = innerStream.read()
         return char?.uppercaseChar()

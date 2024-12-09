@@ -1,4 +1,4 @@
-class UppercaseInputStreamOldWay(private val innerStream: InputStream<Char?>) : InputStream<Char?> {
+class UppercaseInputStreamReaderOldWay(private val innerStream: InputStreamReader<Char?>) : InputStreamReader<Char?> {
     override fun read(): Char? {
         val char = innerStream.read()
         return char?.uppercaseChar()
@@ -15,9 +15,11 @@ class UppercaseInputStreamOldWay(private val innerStream: InputStream<Char?>) : 
 
 fun main() {
     val charStreamReader = CharStreamReader("some text")
-    val stream = UppercaseInputStreamOldWay(charStreamReader)
+    val stream = UppercaseInputStreamReaderOldWay(charStreamReader)
 
-    while (stream.available() != 0) {
-        println(stream.read())
+    stream.use {
+        while (stream.available() != 0) {
+            println(stream.read())
+        }
     }
 }
