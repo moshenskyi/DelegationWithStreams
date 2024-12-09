@@ -6,9 +6,9 @@ In Kotlin, we can take this concept further with class delegation. It allows us 
 
 One of the most iconic examples of decoration in the JVM ecosystem is I/O Streams. Streams are built by wrapping one stream with another, adding layers of functionality along the way. Inspired by this, let’s explore how Kotlin’s class delegation can simplify such patterns. We'll create a simple, illustrative example—a stream that may not serve a practical purpose but demonstrates how to make delegation more idiomatic in Kotlin.
 
+### What are IO Streams in Java
 An I/O Stream represents an input source or an output destination. A stream can represent many different kinds of sources and destinations, including disk files, devices, other programs, and memory arrays.
 
-### What are IO Streams in Java
 Streams support many different kinds of data, including simple bytes, primitive data types, localized characters, and objects. Some streams simply pass on data; others manipulate and transform the data in useful ways.
 
 No matter how they work internally, all streams present the same simple model to programs that use them: A stream is a sequence of data. A program uses an input stream to read data from a source, one item at a time
